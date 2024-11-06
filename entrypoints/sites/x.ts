@@ -22,9 +22,7 @@ export default async function (url: URL) {
 
 function onPageLoad() {
     deAlgorithm();
-    removePremiumAd();
-    cleanNavigation();
-    cleanSidebar();
+    moveSearch();
     stylingTweaks();
 }
 
@@ -37,7 +35,7 @@ function stylingTweaks() {
 
     const style = document.createElement("style");
     style.id = "clear-ext";
-    style.textContent = `
+    let css = `
     /* Centre the primary column */
     [data-testid="primaryColumn"] {
         margin-left: auto !important;
@@ -52,12 +50,56 @@ function stylingTweaks() {
     header[role="banner"]:hover {
         opacity: 1 !important;
     }
+
+    [aria-label="Subscribe to Premium"] {
+        display: none !important;
+    }
+
+    [data-testid="sidebarColumn"] {
+        display: none !important;
+    }
+
+    .clear-ext-delete {
+        display: none !important;
+    }
+
+    /* Hide the text on the sidebar links (icon only) */
+    nav[aria-label="Primary"] > a > div > div:nth-child(2),
+    nav[aria-label="Primary"] > button > div > div:nth-child(2) {
+        display: none !important;
+    }
+
+    /* Make the navigation as small as possible */
+    header[role="banner"] > div > div > div {
+        width: auto !important;
+    }
+
+    /* Hide the new tweet button in the sidebar */
+    div:has(>a[data-testid="SideNav_NewTweet_Button"]) {
+        display: none !important;
+    }
+
+    /* Keep the account switcher as icon only */
+    [data-testid="SideNav_AccountSwitcher_Button"] > div:nth-child(2),
+    [data-testid="SideNav_AccountSwitcher_Button"] > div:nth-child(3) {
+        display: none !important;
+    }
     `;
+
+    ["Grok", "Communities", "Premium", "Verified Orgs", "Search and explore", "Jobs"].forEach((item) => {
+        css += `
+        a[aria-label="${item}"] {
+            display: none !important;
+        }
+        `;
+    });
+
+    style.innerHTML = css;
 
     document.body.appendChild(style);
 }
 
-function cleanSidebar() {
+function moveSearch() {
     // check if search form already exists in primaryColumn
     const primaryColumn = document.querySelector('[data-testid="primaryColumn"]');
 
@@ -80,7 +122,6 @@ function cleanSidebar() {
     searchForm.remove();
 
     // insert it above the tweet form
-
     const div = document.createElement("div");
     div.appendChild(searchForm);
     div.style.paddingTop = "10px";
@@ -89,32 +130,6 @@ function cleanSidebar() {
     div.style.position = "relative";
 
     primaryColumn?.insertBefore(div, primaryColumn.firstChild);
-
-    // find the sidebar
-    document.querySelector('[data-testid="sidebarColumn"]')?.remove();
-}
-
-function cleanNavigation() {
-    const toRemove = ["Grok", "Communities", "Premium", "Verified Orgs", "Search and explore"];
-
-    const navigation = document.querySelector('nav[aria-label="Primary"]');
-
-    if (!navigation) {
-        return;
-    }
-
-    toRemove.forEach((item) => {
-        navigation.querySelector(`a[aria-label="${item}"]`)?.remove();
-    });
-}
-
-function removePremiumAd() {
-    const premiumAd = document.querySelector('[aria-label="Subscribe to Premium"]');
-
-    if (premiumAd) {
-        premiumAd.parentElement?.parentElement?.remove();
-        console.log("Removed premium ad");
-    }
 }
 
 function deAlgorithm() {
@@ -132,14 +147,13 @@ function deAlgorithm() {
 
     // delete the first tab (for you)
     if (tabBar.children[0]?.textContent?.includes("For you")) {
-        tabBar.children[0].remove();
-
         // click the second tab (following)
-        const followingTab = tabBar.children[0] as HTMLDivElement;
+        const followingTab = tabBar.children[1] as HTMLDivElement;
         followingTab.querySelector("a")?.click();
 
         console.log("Removed 'For you' tab and clicked 'Following' tab");
-        // Delete the entire tab bar
-        tabBar.remove();
     }
+
+    tabBar.classList.add("clear-ext-delete");
+    // return tabBar.
 }
