@@ -49,17 +49,6 @@ function stylingTweaks() {
         transition: opacity 0.2s ease-in-out !important;
     }
 
-    main[role="main"] > div:first-child {
-        width: 100% !important;
-    }
-
-    @media(min-width: 1000px) {
-        header[role="banner"] {
-            position: fixed !important;
-            left: 0 !important;
-        }
-    }
-
     header[role="banner"]:hover {
         opacity: 1 !important;
     }
