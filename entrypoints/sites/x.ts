@@ -1,4 +1,5 @@
 import { debounce } from "remeda";
+import injectCss from "./support/injectCss";
 
 export default async function (url: URL) {
     if (!document.cookie.includes("twid=")) {
@@ -6,7 +7,7 @@ export default async function (url: URL) {
         return;
     }
 
-    const debounced = debounce(onPageLoad, {
+    const debounced = debounce(onMutate, {
         waitMs: 100,
     });
 
@@ -18,23 +19,16 @@ export default async function (url: URL) {
         childList: true,
         subtree: true,
     });
-}
 
-function onPageLoad() {
-    deAlgorithm();
-    moveSearch();
     stylingTweaks();
 }
 
+function onMutate() {
+    deAlgorithm();
+    moveSearch();
+}
+
 function stylingTweaks() {
-    const existingStyle = document.querySelector("style#clear-ext");
-
-    if (existingStyle) {
-        return;
-    }
-
-    const style = document.createElement("style");
-    style.id = "clear-ext";
     let css = `
     /* Centre the primary column */
     [data-testid="primaryColumn"] {
@@ -94,9 +88,7 @@ function stylingTweaks() {
         `;
     });
 
-    style.innerHTML = css;
-
-    document.body.appendChild(style);
+    injectCss(css);
 }
 
 function moveSearch() {
