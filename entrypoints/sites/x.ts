@@ -31,14 +31,37 @@ function onMutate() {
 function stylingTweaks() {
     let css = `
     /* Centre the primary column */
-    [data-testid="primaryColumn"] {
+    [data-testid="primaryColumn"],
+    main[role="main"] > div {
         margin-left: auto !important;
         margin-right: auto !important;
     }
 
+    /* Nav */
     header[role="banner"] {
         opacity: 0.2 !important;
         transition: opacity 0.2s ease-in-out !important;
+        position: fixed !important;
+        left: 0 !important;
+    }
+
+    @media (max-width: 768px) {
+        /* On small screens, if the nav is fixed, it will overlap with the main container */
+        header[role="banner"] {
+            position: relative !important;
+        }
+        header[role="banner"] > div {
+            width: 88px !important;
+        }
+    }
+
+    header[role="banner"] > div > div {
+        /* Override X default position:fixed */
+        position: relative !important;
+    }
+
+    header[role="banner"] > div {
+        width: auto !important;
     }
 
     header[role="banner"]:hover {
