@@ -11,7 +11,7 @@ export default async function (url: URL) {
         waitMs: 100,
     });
 
-    const mutationObserver = new MutationObserver((mutations) => {
+    const mutationObserver = new MutationObserver(() => {
         debounced.call();
     });
 
