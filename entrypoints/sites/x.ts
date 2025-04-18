@@ -101,9 +101,22 @@ function stylingTweaks() {
     [data-testid="SideNav_AccountSwitcher_Button"] > div:nth-child(3) {
         display: none !important;
     }
+
+    [data-testid="GrokDrawer"] {
+        display: none !important;
+    }
     `;
 
-    ["Grok", "Communities", "Premium", "Verified Orgs", "Search and explore", "Jobs"].forEach((item) => {
+    [
+        "Grok",
+        "Communities",
+        "Premium",
+        "Verified Orgs",
+        "Search and explore",
+        "Jobs",
+        "Community Notes",
+        "Lists",
+    ].forEach((item) => {
         css += `
         a[aria-label="${item}"] {
             display: none !important;
@@ -160,13 +173,11 @@ function deAlgorithm() {
         return;
     }
 
-    // delete the first tab (for you)
-    if (tabBar.children[0]?.textContent?.includes("For you")) {
-        // click the second tab (following)
-        const followingTab = tabBar.children[1] as HTMLDivElement;
+    // click the second tab (following), if following is already selected don't
+    const followingTab = tabBar.children[1] as HTMLDivElement;
+    if (followingTab.querySelector('a')?.getAttribute('aria-selected') !== "true") {
         followingTab.querySelector("a")?.click();
-
-        console.log("Removed 'For you' tab and clicked 'Following' tab");
+        console.info('Clicking Following tab');
     }
 
     tabBar.classList.add("clear-ext-delete");
